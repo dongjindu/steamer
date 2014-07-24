@@ -1,0 +1,37 @@
+def newSteamerShape(lx, ly, lz, base=FreeCAD.Vector(0, 0, 0), axis=FreeCAD.Vector(0, 0, 1), angle=0):
+	import Part
+	import FreeCAD
+	from FreeCAD import Base
+	vec00 = base
+	vec01 = FreeCAD.Vector(base.x + lx, base.y, base.z)
+	vec02 = FreeCAD.Vector(base.x + lx, base.y + ly, base.z)
+	vec03 = FreeCAD.Vector(base.x, base.y + ly, base.z)
+	vec10 = FreeCAD.Vector(base.x, base.y, base.z + lz)
+	vec11 = FreeCAD.Vector(base.x + lx, base.y, base.z + lz)
+	vec12 = FreeCAD.Vector(base.x + lx, base.y + ly, base.z + lz)
+	vec13 = FreeCAD.Vector(base.x, base.y + ly, base.z + lz)
+	vecx = FreeCAD.Vector(1, 0, 0)
+	vecy = FreeCAD.Vector(0, 1, 0)
+	vecz = FreeCAD.Vector(0, 0, 1)
+	b001 = Part.makeBox(lx, ly, lz)
+	placement1 = FreeCAD.Placement(base, axis, angle)
+	b001.Placement = placement1
+  #### Not blank	
+	cylinderX1 = Part.makeCylinder(lx*0.02, lx, vec0, vecx, angle)
+	cylinderX2 = Part.makeCylinder(lx*0.02, lx, vec3, vecx, angle)
+	cylinderY1 = Part.makeCylinder(ly*0.02, lx, vec0, vecy, angle)
+  cylinderY2 = Part.makeCylinder(ly*0.02, lx, vec1, vecy, angle)
+	cylinderZ1 = Part.makeCylinder(ly*0.02, lx, vec0, vecz, angle)
+  cylinderZ2 = Part.makeCylinder(ly*0.02, lx, vec1, vecz, angle)
+	cylinderZ3 = Part.makeCylinder(ly*0.02, lx, vec2, vecz, angle)
+  cylinderZ4 = Part.makeCylinder(ly*0.02, lx, vec3, vecz, angle)
+  b001 = b001.cut(cylinderX1)
+  b001 = b001.cut(cylinderX2)
+  b001 = b001.cut(cylinderY1)
+  b001 = b001.cut(cylinderY2)
+  b001 = b001.cut(cylinderZ1)
+  b001 = b001.cut(cylinderZ2)
+  b001 = b001.cut(cylinderz3)
+  b001 = b001.cut(cylinderz4)
+  #### Not blank
+	return b1Shape
