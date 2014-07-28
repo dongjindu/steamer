@@ -1,0 +1,10 @@
+def newRoundBox1(lx, ly, lz,  smallradius, base=FreeCAD.Vector(0, 0, 0), axis=FreeCAD.Vector(0, 0, 1), angle=360):
+	import FreeCAD
+	import Sketcher
+	import Draft
+	l1 = Draft.makeLine(FreeCAD.Vector(10, 5, 0), FreeCAD.Vector(2, 3, 0))
+	l2 = Draft.makeLine(FreeCAD.Vector(2, 3, 0), FreeCAD.Vector(1, 8, 0))
+	l3 = Draft.makeLine(FreeCAD.Vector(1,8, 0), FreeCAD.Vector(10, 5, 0))
+	lines = [l1, l2, l3]
+	sk1 = Draft.makeSketch(lines)
+	return sk1
