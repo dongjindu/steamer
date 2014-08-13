@@ -555,9 +555,9 @@ def wire003(lx, ly, lz,  radius, thickness, bottomthickness=3.0, base=FreeCAD.Ve
 		#Make a hole finally
 		else:
 			i2 = i2 + 1
-			#shole = Part.makeCylinder(rhole, thicknessplat, FreeCAD.Vector(cholex + ((randint(1, 5) - 3.0)/ 10), choley + ((randint(1, 5) - 3.0) / 10), bz000), FreeCAD.Vector(0, 0, 1), 360)
-			#s0 = s0.cut(shole)
-			#shole.nullify
+			shole = Part.makeCylinder(rhole, thicknessplat, FreeCAD.Vector(cholex + ((randint(1, 5) - 3.0)/ 10), choley + ((randint(1, 5) - 3.0) / 10), bz000), FreeCAD.Vector(0, 0, 1), 360)
+			s0 = s0.cut(shole)
+			shole.nullify
 	#print 'Total columns of y(first x then y):', iy
 	#print 'Total loops: ',  i1
 	#print 'Total holes: ',  i2
@@ -587,6 +587,7 @@ def assemble001(width, length, thickness, keyupthickness, keydownthickness, othe
 	#             lx    ly     lz    rad    thick   bottomthickness, base, axis, angle, diff
 	s0 = wire000(60.0, 100.0, 100.0, 6.0,   3.0,     0)
 	s0.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 1, 0), 270)
+	s0.translate(FreeCAD.Vector(3.0 , 0.0, 0.0))
 	App.ActiveDocument.addObject("Part::Feature", "sbarrel1")
 	App.ActiveDocument.getObject("sbarrel1").Shape = s0
 	#sbase1 = wire002(width, length, thickness, keyupthickness, keydownthickness, otherthickness, r1, r2, r3, rd, place=FreeCAD.Placement(FreeCAD.Vector(80.0, 0.0, 0.0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0, 0, 0)))
