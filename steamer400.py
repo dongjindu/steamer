@@ -148,7 +148,6 @@ def wire000(lx, ly, lz,  radius, thickness, bottomthickness=3.0, base=FreeCAD.Ve
 	l005 = Part.makeLine(pt005, pt000)
 	lines000 = [l000, l001, l002, l003, l004, l005]
 	wire000 = Part.Wire(lines000)
-	wire000
 	face000 = Part.Face(wire000)
 	face000a = face000.mirror(FreeCAD.Vector(0, 0, base.z + lz/2.0), FreeCAD.Vector(0, 0, 1))
 	face001 = face000a.mirror(FreeCAD.Vector(base.x + radius, base.y + radius, base.z + lz - radius), FreeCAD.Vector(0, 1, 1))
@@ -286,10 +285,12 @@ def wire002(width, length, thickness, keyupthickness, keydownthickness, otherthi
 
 def wire002a(width, length, thickness, keyupthickness, keydownthickness, otherthickness, r1, r2, r3, rd, place=FreeCAD.Placement(FreeCAD.Vector(0.0, 0.0, 0.0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0, 0, 0))):
 	import FreeCAD
+	import math
 	from FreeCAD import Base
 	import Part
 	import Sketcher
 	import Draft
+	from math import sqrt, pi, sin, cos, asin
 	#The key. But the parameters are designed for the base primarily. The parameter of the key has to be derived from them.
 	#rd is the distance from base place to the center of key
 	#r1 is the radius of the cylinder part of the hole
@@ -339,7 +340,7 @@ def wire002a(width, length, thickness, keyupthickness, keydownthickness, otherth
 	place4.Base.y = by4
 	place4.Base.z = bz4
 	s3 = Part.makeCylinder(r3 * 0.999, keydownthickness, place4.Base, place4.Rotation.Axis, 360)
-	#shape of the box of the upper part of the key
+	#shape of the box of the upper part of the key. 
 	place5 = place2
 	bx5 = bx2 - r2
 	by5 = by2 - r1 - r2 * propup 
@@ -348,7 +349,34 @@ def wire002a(width, length, thickness, keyupthickness, keydownthickness, otherth
 	place5.Base.y = by5
 	place5.Base.z = bz5
 	s4 = Part.makeBox(2.0 * r2 * 0.999, r1 * 0.999 + propup * r2 * 0.999, keyupthickness, place5.Base, place5.Rotation.Axis)
-	#shpae of the half cylinder of the upper part of the key
+	place5z = place5
+	bx5z = bx5
+	by5z = by5
+	bz5z = bz5 + keyupthickness * 0.5
+	place5z.Base.x = bx5z
+	place5z.Base.y = by5z
+	place5z.Base.z = bz5z
+	s4z = Part.makeBox(2.0 * r2 * 0.999, r1 * 0.999 + propup * r2 * 0.999, keyupthickness * 0.5, place5z.Base, place5.Rotation.Axis)
+	placesmooth = place5
+	rsmooth = keyupthickness / 4.0 + r2 * r2 / keyupthickness
+	#print 'radius of smooth: ', rsmooth, '.'
+	bxsmooth = bx5 + r2
+	bysmooth = by5 - r2
+	bzsmooth = bz5 + rsmooth
+	placesmooth.Base.x = bxsmooth
+	placesmooth.Base.y = bysmooth
+	placesmooth.Base.z = bzsmooth
+	anglesmooth = 2.0 * math.degrees(math.asin(r2/ rsmooth))
+	print 'Since Value', 1 - keyupthickness * 0.5 / rsmooth
+	print 'math.asin(1)', math.asin(1)
+	print 'math.asin(math.sqrt(0.5))', math.degrees(math.asin(math.sqrt(0.5)))
+	print 'Degrees of anglesmooth:', anglesmooth
+	ssmooth = Part.makeCylinder(rsmooth, r1 * 0.999 + propup * r2 * 0.999 + r2 * 0.999, placesmooth.Base, FreeCAD.Vector(0, 1, 0), anglesmooth)
+	ssmooth.rotate(placesmooth.Base, FreeCAD.Vector(0, 1, 0), 180.0 - anglesmooth * 0.5)
+	s4 = s4.common(ssmooth)
+	s4 = s4.fuse(s4z)
+	#s4 = s4.fuse(ssmooth)
+	#shape of the half cylinder of the upper part of the key
 	place6 = place2
 	bx6 = bx2
 	by6 = by2 - r1 - r2 * propup
@@ -357,6 +385,17 @@ def wire002a(width, length, thickness, keyupthickness, keydownthickness, otherth
 	place6.Base.y = by6
 	place6.Base.z = bz6
 	s5 = Part.makeCylinder(r2 * 0.999, keyupthickness, place6.Base, place6.Rotation.Axis, 360)
+	place6z = place6
+	bx6z = bx6
+	by6z = by6
+	bz6z = bz6 + keyupthickness * 0.5
+	place6z.Base.x = bx6z
+	place6z.Base.y = by6z
+	place6z.Base.z = bz6z
+	s5z = Part.makeCylinder( r2 *  0.999, keyupthickness * 0.5, place6z.Base, place6z.Rotation.Axis, 360)
+	s5 = s5.common(ssmooth)
+	s5 = s5.fuse(s5z)
+	#s5 = s5z
 	s0 = s1
 	s0 = s0.fuse(s2)
 	s0 = s0.fuse(s3)
