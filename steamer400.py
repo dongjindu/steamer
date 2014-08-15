@@ -535,11 +535,11 @@ def wire003(lx, ly, lz,  radius, thickness, bottomthickness=3.0, base=FreeCAD.Ve
 	i2 = 0
 	ix = 0
 	iy = 0
-	rhole = 1.6
-	holedistancey = 3.8 * rhole
-	holedistancex = 3.8 * rhole
-	holerimy = 3.0 * rhole
-	holerimx = 3.0 * rhole
+	rhole = 1.9
+	holedistancey = 3.7 * rhole
+	holedistancex = 3.7 * rhole
+	holerimy = 2.8 * rhole
+	holerimx = 2.8 * rhole
 	cholex = bx000 + holerimx # + (randint(1,5) - 3.0) / 10.0 # Beginning offset
 	choley = by000 + holerimy
 	cholez = bz000
@@ -673,6 +673,68 @@ def assemble001(width, length, thickness, keyupthickness, keydownthickness, othe
 	App.ActiveDocument.addObject("Part::Feature", "shplat1")
 	App.ActiveDocument.getObject("shplat1").Shape = splat1
 
+def assemble002(width, length, thickness, keyupthickness, keydownthickness, otherthickness, r1, r2, r3, rd, place=FreeCAD.Placement(FreeCAD.Vector(0.0, 0.0, 0.0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0, 0, 0))):
+	import FreeCAD
+	from FreeCAD import Base
+	import Part
+	import Sketcher
+	import Draft
+	lx = 60
+	ly = 100
+	lz = 100
+	redundancy = 0.6
+	thicknessplat = 0.3
+	thickness = 3.0
+	r1 = 2.8
+	r2 = 2.0
+	r3 = 1.8
+	rd = 11.2
+	#             lx    ly     lz    rad    thick   bottomthickness, base, axis, angle, diff
+	s0 = wire000(60.0, 100.0, 100.0, 6.0,   thickness,     0)
+	s0.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 1, 0), 270)
+	s0.translate(FreeCAD.Vector(3.5 , 0.0, 0.0))
+	App.ActiveDocument.addObject("Part::Feature", "sbarrel1")
+	App.ActiveDocument.getObject("sbarrel1").Shape = s0
+	sbase1 = wire002(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(110.0, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
+	skey1 = wire002a(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(128.0, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
+	sbase2 = wire002(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(140.0, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
+	skey2 = wire002a(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(158.0, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
+	splat1 = wire003(100.0, 100.0, 100.0, 6.0,   3.0,     0.0)
+	deltaz = 30.0
+	splat1.translate(FreeCAD.Vector(0.0 - ly + thickness + redundancy, 0.0, deltaz + thickness))
+	sbase1.translate(FreeCAD.Vector(0.0 - 110.0 - ly + thickness + redundancy + 0.28 * ly - 6.0, thickness + redundancy, deltaz))
+	sbase2.translate(FreeCAD.Vector(0.0 - 140.0 - ly + thickness + redundancy + 0.72 * ly - 6.0, thickness + redundancy, deltaz))
+	sbase3 = sbase1.mirror(FreeCAD.Vector(0.0, 0.0 + ly / 2.0, 0.0), FreeCAD.Vector(0, 1, 0)) #sbase3p.mirror(FreeCAD.Vector(0, (length/2.0 + width /4.0),0), FreeCAD.Vector(0, 1, 0))
+	sbase4 = sbase2.mirror(FreeCAD.Vector(0.0, 0.0 + ly / 2.0, 0.0), FreeCAD.Vector(0, 1, 0)) #sbase3.translate(FreeCAD.Vector(0 - ly + thickness + redundancy + 0.28 * ly, ly - thickness - redundancy, deltaz))
+	skey1.translate(FreeCAD.Vector(0.0 - ly + thickness + redundancy + 0.28 * ly - 128.0 - 6.0, thickness + redundancy, deltaz))
+	skey1.rotate(FreeCAD.Vector(- 100.0 + thickness + redundancy + r1, thickness + redundancy + rd, 30.0), FreeCAD.Vector(0, 0, 1), 90)
+	skey1.translate(FreeCAD.Vector(25.50, -26, 0))
+	print 'At last after translate skey1.Placement.Base: ' 
+	print skey1.Placement.Base
+	skey2.translate(FreeCAD.Vector(0.0 - ly + thickness + redundancy + 0.72 * ly - 158.0 - 6.0, thickness + redundancy, deltaz))
+	skey2.rotate(FreeCAD.Vector(- 100.0 + thickness + redundancy + r1, thickness + redundancy + rd, 30.0), FreeCAD.Vector(0, 0, 1), 270)
+	skey2.translate(FreeCAD.Vector(69.00, 68.5, 0))
+	skey3 = skey1.mirror(FreeCAD.Vector(0.0, ly / 2.0, 0.0), FreeCAD.Vector(0, 1, 0))#skey3 = skey3p.mirror(FreeCAD.Vector(0, (length/2.0 + width /4.0),0), FreeCAD.Vector(0, 1, 0))
+	skey4 = skey2.mirror(FreeCAD.Vector(0.0, ly / 2.0, 0.0), FreeCAD.Vector(0, 1, 0))#skey4 = skey4p.mirror(FreeCAD.Vector(0, (length/2.0 + width /4.0),0), FreeCAD.Vector(0, 1, 0))
+	App.ActiveDocument.addObject("Part::Feature", "shbase1")
+	App.ActiveDocument.getObject("shbase1").Shape = sbase1
+	App.ActiveDocument.addObject("Part::Feature", "shkey1")
+	App.ActiveDocument.getObject("shkey1").Shape = skey1
+	App.ActiveDocument.addObject("Part::Feature", "shbase2")
+	App.ActiveDocument.getObject("shbase2").Shape = sbase2
+	App.ActiveDocument.addObject("Part::Feature", "shkey2")
+	App.ActiveDocument.getObject("shkey2").Shape = skey2
+	App.ActiveDocument.addObject("Part::Feature", "shbase3")
+	App.ActiveDocument.getObject("shbase3").Shape = sbase3
+	App.ActiveDocument.addObject("Part::Feature", "shkey3")
+	App.ActiveDocument.getObject("shkey3").Shape = skey3
+	App.ActiveDocument.addObject("Part::Feature", "shbase4")
+	App.ActiveDocument.getObject("shbase4").Shape = sbase4
+	App.ActiveDocument.addObject("Part::Feature", "shkey4")
+	App.ActiveDocument.getObject("shkey4").Shape = skey4
+	App.ActiveDocument.addObject("Part::Feature", "shplat1")
+	App.ActiveDocument.getObject("shplat1").Shape = splat1
+
 	#####################Barrel creation old method
 	#sh1 = newRoundBox1(30.0, 10.0, 12.0, 0.1, FreeCAD.Vector(20, 20, 0))
 	#sh2 = newRoundBox2(sh1, 30.0, 10.0, 12.0, 0.1, FreeCAD.Vector(20, 20, 0))
@@ -684,5 +746,5 @@ App.newDocument("Unnamed")
 App.setActiveDocument("Unnamed")
 App.ActiveDocument=App.getDocument("Unnamed")
 Gui.ActiveDocument=Gui.getDocument("Unnamed")
-assemble001(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(80, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
+assemble002(12.0, 11.0, 2.50, 1.0, 1.0, 0.0, 2.8, 2.0, 1.8, 11.2, FreeCAD.Placement(FreeCAD.Vector(80, 0, 0), FreeCAD.Rotation(FreeCAD.Vector(0.0, 0.0, 1.0), 360), FreeCAD.Vector(0.0, 0.0, 0.0)))
 #r1 is 3.0 which is the center hole of the key
